@@ -1,0 +1,19 @@
+/* styles/globals.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.book-result {
+    display: flex;
+    margin-bottom: 20px;
+  }
+  
+  .book-cover img {
+    width: 100px;
+    height: auto;
+  }
+  
+  .book-details {
+    margin-left: 20px;
+  }
