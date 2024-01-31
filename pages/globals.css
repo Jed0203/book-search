@@ -21,3 +21,8 @@
     color: white;
   }
   
+  .book-grid:hover {
+    transform: translateY(-5px); /* Adjust the value as needed */
+  }
+  
+  

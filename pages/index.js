@@ -73,7 +73,7 @@ const Home = () => {
     <div className="flex flex-col md:px-12 px-4 bg-black font-poppins items-center min-h-screen">
   
       {/* Slideshow */}
-      <div className="max-w-[1400px] w-full py-24 px-4 relative group">
+      <div className="max-w-[1400px] w-full py-23 px-4 relative group">
         <div
           style={{ backgroundImage: `url(${slides[currentIndex].url})` }}
           className='w-full h-96 rounded-2xl bg-center bg-cover duration-500'
@@ -110,7 +110,7 @@ const Home = () => {
   
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
         {filteredResults.map((book, index) => (
-          <div key={index} className="bg-white rounded-lg p-4">
+          <div key={index} className="bg-gray-600 rounded-lg p-4 hover:transform hover:translate-y-[-5px]">
             <BookResult book={book} />
           </div>
         ))}
