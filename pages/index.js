@@ -4,7 +4,9 @@ import BookResult from './components/BookResult';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 
+
 const Home = () => {
+  // State variables
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,6 +32,7 @@ const Home = () => {
     },
   ];
 
+  // Functions for slideshow navigation
   const prevSlide = () => {
     const isFirstSlide = currentIndex === 0;
     const newIndex = isFirstSlide ? slides.length - 1 : currentIndex - 1;
@@ -73,6 +76,7 @@ const Home = () => {
     return title.includes(query.toLowerCase()) || author.includes(query.toLowerCase());
   });
 
+   // Render component
   return (
     <div className="flex flex-col md:px-12 px-4 bg-black font-poppins items-center min-h-screen">
   
@@ -106,7 +110,8 @@ const Home = () => {
       <h1 className="md:text-6xl text-4xl font-bold mt-0.5">
         <span className="text-blue-500">Books</span> <span className="text-white">Search</span>
       </h1>
-  
+      
+      {/* Search form */}
       <form onSubmit={handleSubmit} className="mt-8 flex justify-center">
         <input type="text" value={query} onChange={handleChange} placeholder='Enter book title' className="w-64 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" />
         <button type="submit" className="ml-2 px-4 py-2 bg-white text-black rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500">Search</button>
