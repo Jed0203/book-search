@@ -2,6 +2,8 @@
 	<h2>Books App</h2>
 </div>
 
+> [Live Preview](https://jed-book-search.netlify.app/)
+
 ### ⚡️ Features
 
 - Search for Books based on multiple parameters.
