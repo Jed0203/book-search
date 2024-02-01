@@ -8,6 +8,7 @@ const Home = () => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
 
   const slides = [
@@ -46,11 +47,14 @@ const Home = () => {
   };
 
   const searchBooks = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get(`http://openlibrary.org/search.json?q=${query}`);
+      const response = await axios.get(`https://openlibrary.org/search.json?title=${query}`);
       setResults(response.data.docs);
     } catch (error) {
       console.error('Error searching books:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,8 +68,8 @@ const Home = () => {
   };
 
   const filteredResults = results.filter(book => {
-    const title = book.title.toLowerCase();
-    const author = book.author_name ? book.author_name.join(',').toLowerCase() : '';
+    const title = book.title?.toLowerCase() || '';
+    const author = book.author_name?.join(',').toLowerCase() || '';
     return title.includes(query.toLowerCase()) || author.includes(query.toLowerCase());
   });
 
@@ -91,8 +95,8 @@ const Home = () => {
             <div
               key={slideIndex}
               onClick={() => goToSlide(slideIndex)}
-              className='text-2xl cursor-pointer white-dot'
-            >
+              className={`text-2xl cursor-pointer ${slideIndex === currentIndex ? 'text-white' : 'text-gray-400'}`}
+              >
               <RxDotFilled />
             </div>
           ))}
@@ -107,7 +111,11 @@ const Home = () => {
         <input type="text" value={query} onChange={handleChange} placeholder='Enter book title' className="w-64 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" />
         <button type="submit" className="ml-2 px-4 py-2 bg-white text-black rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500">Search</button>
       </form>
-  
+      
+      {/* Render loading animation if loading state is true */}
+      {loading && <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>}
+      
+      {/* Render search results */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
         {filteredResults.map((book, index) => (
           <div key={index} className="bg-gray-600 rounded-lg p-4 hover:transform hover:translate-y-[-5px]">

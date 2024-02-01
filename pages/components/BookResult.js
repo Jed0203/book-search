@@ -4,8 +4,8 @@ const BookResult = ({ book }) => {
   return (
     <div className="book-result">
       <div className="book-cover">
-      <img src={`http://covers.openlibrary.org/b/id/${cover_i}-M.jpg`} alt={title} />
-    </div>
+        <img src={`https://covers.openlibrary.org/b/id/${cover_i}-L.jpg`} alt={title} />
+      </div>
       <div className="book-details">
         <h3>{title}</h3>
         <p>Author: {author_name}</p>
@@ -16,3 +16,4 @@ const BookResult = ({ book }) => {
 };
 
 export default BookResult;
+
