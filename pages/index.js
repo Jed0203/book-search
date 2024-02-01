@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import BookResult from './components/BookResult';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
@@ -86,6 +86,37 @@ const Home = () => {
   const indexOfLastResult = (currentPage + 1) * resultsPerPage;
   const indexOfFirstResult = indexOfLastResult - resultsPerPage;
   const currentResults = filteredResults.slice(indexOfFirstResult, indexOfLastResult);
+
+  useEffect(() => {
+    // Function to handle window resize
+    const handleResize = () => {
+      // Call to handle pagination visibility
+      handlePaginationVisibility();
+    };
+
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+
+    // Initial call to handle pagination visibility
+    handlePaginationVisibility();
+
+    // Cleanup on unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Function to handle pagination visibility
+  const handlePaginationVisibility = () => {
+    const paginationEl = document.querySelector('.pagination');
+    if (paginationEl) {
+      if (window.innerWidth <= 768) {
+        paginationEl.classList.add('hidden');
+      } else {
+        paginationEl.classList.remove('hidden');
+      }
+    }
+  };
 
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
