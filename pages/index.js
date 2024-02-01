@@ -3,6 +3,7 @@ import axios from 'axios';
 import BookResult from './components/BookResult';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
+import ReactPaginate from 'react-paginate';
 
 
 const Home = () => {
@@ -11,6 +12,8 @@ const Home = () => {
   const [results, setResults] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0); // Change to 0-based index
+  const resultsPerPage = 8;
 
 
   const slides = [
@@ -54,12 +57,16 @@ const Home = () => {
     try {
       const response = await axios.get(`https://openlibrary.org/search.json?title=${query}`);
       setResults(response.data.docs);
+      setCurrentPage(0); // Reset to first page when new search is performed
     } catch (error) {
       console.error('Error searching books:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  // Pagination
+  const pageCount = Math.ceil(results.length / resultsPerPage);
 
   const handleChange = (event) => {
     setQuery(event.target.value);
@@ -75,6 +82,14 @@ const Home = () => {
     const author = book.author_name?.join(',').toLowerCase() || '';
     return title.includes(query.toLowerCase()) || author.includes(query.toLowerCase());
   });
+
+  const indexOfLastResult = (currentPage + 1) * resultsPerPage;
+  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
+  const currentResults = filteredResults.slice(indexOfFirstResult, indexOfLastResult);
+
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
 
    // Render component
   return (
@@ -118,15 +133,32 @@ const Home = () => {
       </form>
       
       {/* Render loading animation if loading state is true */}
-      {loading && <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>}
+      {loading && <div className="animate-spin rounded-full h-10 w-10 mt-1 border-t-2 border-b-2 border-blue-500"></div>}
       
       {/* Render search results */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
-        {filteredResults.map((book, index) => (
-          <div key={index} className="bg-gray-600 rounded-lg p-4 hover:transform hover:translate-y-[-5px]">
+        {currentResults.map((book, index) => (
+          <div key={index} className="bg-slate-400 rounded-lg p-4 hover:transform hover:translate-y-[-5px]">
             <BookResult book={book} />
           </div>
         ))}
+      </div>
+      {/* Pagination */}
+      <div className="mt-8 flex justify-center text-white">
+        <ReactPaginate
+          pageCount={Math.ceil(filteredResults.length / resultsPerPage)}
+          pageRangeDisplayed={5}
+          marginPagesDisplayed={2}
+          previousLabel={currentPage === 0 ? null : 'Previous'}
+          nextLabel={results.length <= resultsPerPage || currentPage === pageCount - 1 ? null : 'Next'}
+          breakLabel={'...'}
+          onPageChange={handlePageChange}
+          containerClassName={'pagination'}
+          activeClassName={'active'}
+          pageClassName={'pagination-item'} // Add this line
+          previousClassName={'pagination-previous'} // Add this line
+          nextClassName={'pagination-next'} // Add this line
+        />
       </div>
     </div>
   );
