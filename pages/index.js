@@ -186,9 +186,9 @@ const Home = () => {
           onPageChange={handlePageChange}
           containerClassName={'pagination'}
           activeClassName={'active'}
-          pageClassName={'pagination-item'} // Add this line
-          previousClassName={'pagination-previous'} // Add this line
-          nextClassName={'pagination-next'} // Add this line
+          pageClassName={'pagination-item'}
+          previousClassName={'pagination-previous'}
+          nextClassName={'pagination-next'}
         />
       </div>
     </div>
