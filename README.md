@@ -1,10 +1,6 @@
-![cover](assets/cover.png)
-
 <div align="center">
 	<h2>Books App</h2>
 </div>
-
-> [Live Preview](https://rapidapi-example-books-app.vercel.app/)
 
 ### ⚡️ Features
 
