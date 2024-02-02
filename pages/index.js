@@ -15,7 +15,6 @@ const Home = () => {
   const [currentPage, setCurrentPage] = useState(0); // Change to 0-based index
   const [searched, setSearched] = useState(false); // State to track if search button is clicked
   const resultsPerPage = 8;
-  const [isSearchInputFocused, setIsSearchInputFocused] = useState(false); // Track focus state of search input
   const [searchedBooks, setSearchedBooks] = useState([]); // Store searched books
 
 
@@ -70,16 +69,6 @@ const Home = () => {
     }
   };
 
-  // Function to handle search input focus
-  const handleSearchInputFocus = () => {
-    setIsSearchInputFocused(true);
-  };
-
-  // Function to handle search input blur
-  const handleSearchInputBlur = () => {
-    setIsSearchInputFocused(false);
-  };
-
   // Pagination
   const pageCount = Math.ceil(results.length / resultsPerPage);
 
@@ -96,15 +85,22 @@ const Home = () => {
     setCurrentPage(selected);
   };
 
-  const filteredResults = results.filter(book => {
-    const title = book.title?.toLowerCase() || '';
-    const author = book.author_name?.join(',').toLowerCase() || '';
-    return title.includes(query.toLowerCase()) || author.includes(query.toLowerCase());
-  });
 
   const indexOfLastResult = (currentPage + 1) * resultsPerPage;
   const indexOfFirstResult = indexOfLastResult - resultsPerPage;
   const currentResults = searchedBooks.slice(indexOfFirstResult, indexOfLastResult);
+
+  // Function to handle pagination visibility
+  const handlePaginationVisibility = () => {
+    const paginationEl = document.querySelector('.pagination');
+    if (paginationEl) {
+      if (window.innerWidth <= 768) {
+        paginationEl.classList.add('hidden');
+      } else {
+        paginationEl.classList.remove('hidden');
+      }
+    }
+  };
 
   useEffect(() => {
     // Function to handle window resize
@@ -194,6 +190,7 @@ const Home = () => {
           </div>
         ))}
       </div>
+      
       {/* Pagination */}
       {searched && pageCount > 1 && (
         <div className="mt-8 flex justify-center text-white">
@@ -203,8 +200,6 @@ const Home = () => {
             marginPagesDisplayed={2}
             previousLabel={currentPage === 0 ? null : 'Previous'}
             nextLabel={currentPage === pageCount - 1 ? null : 'Next'}
-            // previousLabel={currentPage === 0 ? null : 'Previous'}
-            // nextLabel={results.length <= resultsPerPage || currentPage === pageCount - 1 ? null : 'Next'}
             breakLabel={'...'}
             onPageChange={handlePageChange}
             containerClassName={'pagination'}
