@@ -126,16 +126,16 @@ const Home = () => {
   }, []);
 
   // Function to handle pagination visibility
-  const handlePaginationVisibility = () => {
-    const paginationEl = document.querySelector('.pagination');
-    if (paginationEl) {
-      if (window.innerWidth <= 768) {
-        paginationEl.classList.add('hidden');
-      } else {
-        paginationEl.classList.remove('hidden');
-      }
-    }
-  };
+  // const handlePaginationVisibility = () => {
+  //   const paginationEl = document.querySelector('.pagination');
+  //   if (paginationEl) {
+  //     if (window.innerWidth <= 768) {
+  //       paginationEl.classList.add('hidden');
+  //     } else {
+  //       paginationEl.classList.remove('hidden');
+  //     }
+  //   }
+  // };
 
   // const handlePageChange = ({ selected }) => {
   //   setCurrentPage(selected);
