@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect} from 'react';
 import axios from 'axios';
 import BookResult from './components/BookResult';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
@@ -13,7 +13,10 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(0); // Change to 0-based index
+  const [searched, setSearched] = useState(false); // State to track if search button is clicked
   const resultsPerPage = 8;
+  const [isSearchInputFocused, setIsSearchInputFocused] = useState(false); // Track focus state of search input
+  const [searchedBooks, setSearchedBooks] = useState([]); // Store searched books
 
 
   const slides = [
@@ -58,11 +61,23 @@ const Home = () => {
       const response = await axios.get(`https://openlibrary.org/search.json?title=${query}`);
       setResults(response.data.docs);
       setCurrentPage(0); // Reset to first page when new search is performed
+      setSearched(true); // Set searched to true when search is performed
+      setSearchedBooks(response.data.docs); // Store searched books
     } catch (error) {
       console.error('Error searching books:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to handle search input focus
+  const handleSearchInputFocus = () => {
+    setIsSearchInputFocused(true);
+  };
+
+  // Function to handle search input blur
+  const handleSearchInputBlur = () => {
+    setIsSearchInputFocused(false);
   };
 
   // Pagination
@@ -77,6 +92,10 @@ const Home = () => {
     searchBooks();
   };
 
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+  };
+
   const filteredResults = results.filter(book => {
     const title = book.title?.toLowerCase() || '';
     const author = book.author_name?.join(',').toLowerCase() || '';
@@ -85,7 +104,7 @@ const Home = () => {
 
   const indexOfLastResult = (currentPage + 1) * resultsPerPage;
   const indexOfFirstResult = indexOfLastResult - resultsPerPage;
-  const currentResults = filteredResults.slice(indexOfFirstResult, indexOfLastResult);
+  const currentResults = searchedBooks.slice(indexOfFirstResult, indexOfLastResult);
 
   useEffect(() => {
     // Function to handle window resize
@@ -118,9 +137,9 @@ const Home = () => {
     }
   };
 
-  const handlePageChange = ({ selected }) => {
-    setCurrentPage(selected);
-  };
+  // const handlePageChange = ({ selected }) => {
+  //   setCurrentPage(selected);
+  // };
 
    // Render component
   return (
@@ -159,7 +178,8 @@ const Home = () => {
       
       {/* Search form */}
       <form onSubmit={handleSubmit} className="mt-8 flex justify-center">
-        <input type="text" value={query} onChange={handleChange} placeholder='Enter book title' className="w-64 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" />
+        <input type="text" 
+              value={query} onChange={handleChange} placeholder='Enter book title' className="w-64 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:border-blue-300" />
         <button type="submit" className="ml-2 px-4 py-2 bg-white text-black rounded-md hover:bg-blue-500 hover:text-white focus:outline-none focus:bg-blue-500">Search</button>
       </form>
       
@@ -175,22 +195,26 @@ const Home = () => {
         ))}
       </div>
       {/* Pagination */}
-      <div className="mt-8 flex justify-center text-white">
-        <ReactPaginate
-          pageCount={Math.ceil(filteredResults.length / resultsPerPage)}
-          pageRangeDisplayed={5}
-          marginPagesDisplayed={2}
-          previousLabel={currentPage === 0 ? null : 'Previous'}
-          nextLabel={results.length <= resultsPerPage || currentPage === pageCount - 1 ? null : 'Next'}
-          breakLabel={'...'}
-          onPageChange={handlePageChange}
-          containerClassName={'pagination'}
-          activeClassName={'active'}
-          pageClassName={'pagination-item'}
-          previousClassName={'pagination-previous'}
-          nextClassName={'pagination-next'}
-        />
-      </div>
+      {searched && pageCount > 1 && (
+        <div className="mt-8 flex justify-center text-white">
+          <ReactPaginate
+            pageCount={pageCount}
+            pageRangeDisplayed={5}
+            marginPagesDisplayed={2}
+            previousLabel={currentPage === 0 ? null : 'Previous'}
+            nextLabel={currentPage === pageCount - 1 ? null : 'Next'}
+            // previousLabel={currentPage === 0 ? null : 'Previous'}
+            // nextLabel={results.length <= resultsPerPage || currentPage === pageCount - 1 ? null : 'Next'}
+            breakLabel={'...'}
+            onPageChange={handlePageChange}
+            containerClassName={'pagination'}
+            activeClassName={'active'}
+            pageClassName={'pagination-item'}
+            previousClassName={'pagination-previous'}
+            nextClassName={'pagination-next'}
+          />
+        </div>
+      )}
     </div>
   );
   
