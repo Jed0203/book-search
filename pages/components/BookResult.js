@@ -5,7 +5,7 @@
  * @returns {JSX.Element} - JSX element representing the book result.
  */
 
-const BookResult = ({ book }) => {
+const BookResult = ({ book, onClick }) => {
   if (!book) {
     return null; // Render nothing if book is undefined or null
   }

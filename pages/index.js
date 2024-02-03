@@ -1,6 +1,7 @@
 import { useState, useEffect} from 'react';
 import axios from 'axios';
 import BookResult from './components/BookResult';
+import BookDetail from './components/BookDetail';
 import { BsChevronCompactLeft, BsChevronCompactRight } from 'react-icons/bs';
 import { RxDotFilled } from 'react-icons/rx';
 import ReactPaginate from 'react-paginate';
@@ -16,6 +17,7 @@ const Home = () => {
   const [searched, setSearched] = useState(false); // State to track if search button is clicked
   const resultsPerPage = 8;
   const [searchedBooks, setSearchedBooks] = useState([]); // Store searched books
+  const [selectedBook, setSelectedBook] = useState(null);
 
 
   const slides = [
@@ -52,6 +54,16 @@ const Home = () => {
 
   const goToSlide = (slideIndex) => {
     setCurrentIndex(slideIndex);
+  };
+
+  const fetchBookDetails = async (workId) => {
+    try {
+      const response = await axios.get(`https://openlibrary.org${workId}.json`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching book details:', error);
+      return null;
+    }
   };
 
   const searchBooks = async () => {
@@ -121,23 +133,36 @@ const Home = () => {
     };
   }, []);
 
-  // Function to handle pagination visibility
-  // const handlePaginationVisibility = () => {
-  //   const paginationEl = document.querySelector('.pagination');
-  //   if (paginationEl) {
-  //     if (window.innerWidth <= 768) {
-  //       paginationEl.classList.add('hidden');
-  //     } else {
-  //       paginationEl.classList.remove('hidden');
-  //     }
-  //   }
-  // };
+  // Function to handle selection of a book
+  const handleBookSelect = async (book) => {
+    const bookDetails = await fetchBookDetails(book.key);
 
-  // const handlePageChange = ({ selected }) => {
-  //   setCurrentPage(selected);
-  // };
+    let descriptionText = "";
 
-   // Render component
+    if (typeof bookDetails.description === "object" && bookDetails.description.type === "/type/text") {
+      // For the first book with the description format {"type": "/type/text", "value": ...}
+      descriptionText = bookDetails.description.value;
+    } else if (typeof bookDetails.description === "string") {
+      // For the second book with the description format "..."
+      descriptionText = bookDetails.description;
+    }
+
+    // Create the selected book object with the extracted description
+    const selectedBook = {
+      title: bookDetails.title,
+      description: descriptionText,
+      // Add other properties as needed
+    };
+
+    setSelectedBook(selectedBook);
+  };
+
+  // Function to close the detailed view
+  const handleCloseDetailView = () => {
+    setSelectedBook(null);
+  };
+
+
   return (
     <div className="flex flex-col md:px-12 px-4 bg-black font-poppins items-center min-h-screen">
   
@@ -185,12 +210,23 @@ const Home = () => {
       {/* Render search results */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-8">
         {currentResults.map((book, index) => (
-          <div key={index} className="bg-slate-400 rounded-lg p-4 hover:transform hover:translate-y-[-5px]">
-            <BookResult book={book} />
+          <div key={index} className="bg-slate-400 rounded-lg p-4 hover:transform hover:translate-y-[-5px]" onClick={() => handleBookSelect(book)}>
+            <BookResult book={book} onClick={() => handleBookSelect(book)}/>
           </div>
         ))}
       </div>
-      
+
+      {/* Detailed view modal */}
+      {selectedBook && (
+        <div className="fixed inset-0 flex justify-center items-center z-50">
+          <div className="absolute inset-0 bg-black opacity-50"></div>
+            <div className="bg-white rounded-lg p-8 z-10">
+              <BookDetail book={selectedBook} onClose={handleCloseDetailView} />
+            </div>
+        </div>
+)}
+
+
       {/* Pagination */}
       {searched && pageCount > 1 && (
         <div className="mt-8 flex justify-center text-white">
